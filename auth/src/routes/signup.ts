@@ -1,5 +1,7 @@
 import express, { Request, Response } from 'express'
 import { body, validationResult } from 'express-validator';
+import { RequestValidationError } from '../errors/request-validation-error';
+import { DataBaseConnectionError } from '../errors/data-base-connection-error';
 const router = express.Router()
 
 const validators = [
@@ -11,10 +13,10 @@ router.post('/api/users/signup', validators, (req: Request, res: Response) => {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-        return res.status(400).send(errors.array())
+        throw new RequestValidationError(errors.array());
     }
     const { email, password } = req.body;
-    console.log('creating a userr')
+    throw new DataBaseConnectionError();
     res.send({})
 })
 
