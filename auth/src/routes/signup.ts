@@ -1,8 +1,9 @@
 import express, { Request, Response } from 'express'
 import { body, validationResult } from 'express-validator';
 import { RequestValidationError } from '../errors/request-validation-error';
+import { BadRequestError } from '../errors/bad-rquest-error';
 import { User } from '../models/user';
-
+import jwt from 'jsonwebtoken';
 const router = express.Router()
 
 const validators = [
@@ -17,11 +18,25 @@ router.post('/api/users/signup', validators, async (req: Request, res: Response)
         throw new RequestValidationError(errors.array());
     }
     const { email, password } = req.body;
+
     const exsistingUser = await User.findOne({ email })
     if (exsistingUser) {
-        console.log('Email in user');
-        return res.send({})
+        throw new BadRequestError('Email in use');
     }
+    const user = await User.create({ email, password });
+    await user.save()
+
+    // Generate JWT
+    const userJwt = jwt.sign({
+        id: user.id,
+        email: user.email
+    }, process.env.JWT_KEY!)
+
+    // Store it on session object
+    req.session = { jwt: userJwt }
+
+    res.status(201).send(user);
+
 })
 
 export default router  
