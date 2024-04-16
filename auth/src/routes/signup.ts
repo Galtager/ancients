@@ -1,9 +1,10 @@
 import express, { Request, Response } from 'express'
-import { body, validationResult } from 'express-validator';
-import { RequestValidationError } from '../errors/request-validation-error';
+import { body } from 'express-validator';
 import { BadRequestError } from '../errors/bad-rquest-error';
 import { User } from '../models/user';
+import { validateRequest } from '../middlewares/validate-request';
 import jwt from 'jsonwebtoken';
+
 const router = express.Router()
 
 const validators = [
@@ -11,12 +12,8 @@ const validators = [
     body('password').trim().isLength({ min: 4, max: 20 }).withMessage('Password must be between 4 and 20 characters')
 ]
 
-router.post('/api/users/signup', validators, async (req: Request, res: Response) => {
-    const errors = validationResult(req);
+router.post('/api/users/signup', validators, validateRequest, async (req: Request, res: Response) => {
 
-    if (!errors.isEmpty()) {
-        throw new RequestValidationError(errors.array());
-    }
     const { email, password } = req.body;
 
     const exsistingUser = await User.findOne({ email })
