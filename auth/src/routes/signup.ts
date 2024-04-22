@@ -15,7 +15,6 @@ const validators = [
 router.post('/api/users/signup', validators, validateRequest, async (req: Request, res: Response) => {
 
     const { email, password } = req.body;
-
     const exsistingUser = await User.findOne({ email })
     if (exsistingUser) {
         throw new BadRequestError('Email in use');
@@ -33,7 +32,5 @@ router.post('/api/users/signup', validators, validateRequest, async (req: Reques
     req.session = { jwt: userJwt }
 
     res.status(201).send(user);
-
 })
-
 export default router  
