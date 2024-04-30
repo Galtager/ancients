@@ -1,10 +1,6 @@
 import mongoose from "mongoose";
 import { Password } from "../services/password";
 
-interface UserAttrs {
-    email: string;
-    password: string;
-}
 const userSchema = new mongoose.Schema({
     email: {
         type: String,

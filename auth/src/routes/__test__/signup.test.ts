@@ -35,3 +35,7 @@ it('disallowes duplicate emails', async () => {
     await request(app).post('/api/users/signup').send({ email: 'test@test.com', password: 'test123' }).expect(201);
     await request(app).post('/api/users/signup').send({ email: 'test@test.com', password: 'test123' }).expect(400);
 })
+it('sets a coockie after successfull signup', async () => {
+    const response = await request(app).post('/api/users/signup').send({ email: 'test@test.com', password: 'test123' }).expect(201);
+    expect(response.get('Set-Cookie')).toBeDefined();
+})
