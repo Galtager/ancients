@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import Router from 'next/router'
-import useRequest from '../hooks/use-request';
-import LoadingButton from '../components/ui/LoadingButton';
+import useRequest from '../../hooks/use-request';
+import LoadingButton from '../../components/ui/LoadingButton';
 const Signin = () => {
 
     const [email, setEmail] = useState('')

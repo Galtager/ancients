@@ -47,7 +47,7 @@ const Signup = () => {
                             id="password"
                             placeholder="***********" />
                     </div>
-                    {errors.length && errors}
+                    {errors}
                     <LoadingButton type="submit" loading={loading}>
                         Sign Up
                     </LoadingButton>
