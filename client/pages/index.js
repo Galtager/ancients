@@ -1,7 +1,15 @@
+import backendClient from "../api/backend";
 
 
-const Page = () => {
-  return <h1>Landing Page</h1>;
+const LandingPage = ({ currentUser }) => {
+  console.log(currentUser)
+  return <h1>{currentUser ? "You are sign in" : "You are NOT sign in"}</h1>;
 };
 
-export default Page;
+LandingPage.getInitialProps = async (context) => {
+  const client = backendClient(context)
+  const { data } = await client.get("/api/users/currentuser")
+  return data
+}
+
+export default LandingPage;

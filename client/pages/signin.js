@@ -1,18 +1,23 @@
 import { useState } from 'react'
-import axios from 'axios'
-const Signup = () => {
+import Router from 'next/router'
+import useRequest from '../hooks/use-request';
+import LoadingButton from '../components/ui/LoadingButton';
+const Signin = () => {
 
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
-    const [errors, setErrors] = useState([])
+    const { doRequest, errors, loading } = useRequest({ url: "/api/users/sigin", method: "post", body: { email, password } })
+
     const onSubmit = async (event) => {
-        event.preventDefault();
         try {
-            const response = await axios.post("/api/users/signup", { email, password })
-            console.log(response.data)
+            event.preventDefault();
+            await doRequest();
+            Router.push("/")
+
         } catch (error) {
-            setErrors(error.response.data.errors)
+
         }
+
     }
 
     return (
@@ -42,21 +47,14 @@ const Signup = () => {
                             id="password"
                             placeholder="***********" />
                     </div>
-                    {errors.length && <div class="bg-red-50 p-2 mb-4">
-                        <p class=" py-4 text-red-900 font-semibold text-lg">Ooops...</p>
-                        <ul class="px-6  list-disc">
-                            {errors.map(error => (
-                                <li key={error.message} className="text-md text-red-900 text-sm">{error.message}</li>
-                            ))}
-                        </ul>
-                    </div>}
-                    <button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" >
+                    {errors}
+                    <LoadingButton type="submit" loading={loading}>
                         Sign In
-                    </button>
+                    </LoadingButton>
                 </form>
             </div >
         </div>
     )
 };
 
-export default Signup;
+export default Signin;
