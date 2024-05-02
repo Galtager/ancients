@@ -1,9 +1,32 @@
 
 import 'tailwindcss/tailwind.css';
+import backendClient from '../api/backend';
+import Header from '../components/Header';
 
-const app = ({ Component, pageProps }) => {
-    return <Component {...pageProps} />
+const AppComponent = ({ Component, pageProps, currentUser }) => {
+    return (
+        <div>
+            <Header currentUser={currentUser} />
+            <Component {...pageProps} />
+        </div>
+    )
 
 }
+AppComponent.getInitialProps = async appContext => {
 
-export default app;
+    const client = backendClient(appContext.ctx);
+    let pageProps = {}
+    try {
+        const { data } = await client.get('/api/users/currentuser');
+
+        if (appContext.Component.getInitialProps) {
+            pageProps = await appContext.Component.getInitialProps(appContext.ctx)
+        }
+        return { pageProps, ...data };
+
+    } catch (error) {
+        return { pageProps };
+    }
+}
+
+export default AppComponent;

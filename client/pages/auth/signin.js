@@ -6,7 +6,7 @@ const Signin = () => {
 
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
-    const { doRequest, errors, loading } = useRequest({ url: "/api/users/sigin", method: "post", body: { email, password } })
+    const { doRequest, errors, loading } = useRequest({ url: "/api/users/signin", method: "post", body: { email, password } })
 
     const onSubmit = async (event) => {
         try {
@@ -17,7 +17,6 @@ const Signin = () => {
         } catch (error) {
 
         }
-
     }
 
     return (
