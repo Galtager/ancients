@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ancients-mongo-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ancients-mongo
+  template:
+    metadata:
+      labels:
+        app: ancients-mongo
+    spec:
+      containers:
+        - name: ancients-mongo
+          image: mongo
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ancients-mongo-srv
+spec:
+  type: ClusterIP  # default type for internal expose in the 
+  selector:
+    app: ancients-mongo
+  ports: 
+    - name: db
+      protocol: TCP
+      port: 27017
+      targetPort: 27017

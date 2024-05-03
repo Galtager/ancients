@@ -8,7 +8,6 @@ const start = async () => {
     if (!process.env.DB_URI) {
         throw new Error("DB_URI must be defined")
     }
-
     try {
         await mongoose.connect(process.env.DB_URI!)
         console.log("Connected to Mongodb")

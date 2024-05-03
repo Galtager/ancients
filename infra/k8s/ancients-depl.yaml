@@ -1,23 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: auth-depl
+  name: ancients-depl
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: auth
+      app: ancients
   template:
     metadata:
       labels:
-        app: auth
+        app: ancients
     spec:
       containers:
-        - name: auth
-          image: us.gcr.io/ancients-dev/auth
+        - name: ancients
+          image: us.gcr.io/ancients-dev/ancients
           env:
             - name: DB_URI
-              value: 'mongodb://auth-mongo-srv:27017/auth'
+              value: 'mongodb://ancients-mongo-srv:27017/ancients'
             - name: JWT_KEY
               valueFrom:
                 secretKeyRef:
@@ -27,13 +27,13 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: auth-srv
+  name: ancients-srv
 spec:
   type: ClusterIP  # default type for internal expose in the 
   selector:
-    app: auth
+    app: ancients
   ports: 
-    - name: auth
+    - name: ancients
       protocol: TCP
       port: 3000
       targetPort: 3000
