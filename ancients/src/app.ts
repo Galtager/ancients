@@ -3,8 +3,9 @@ import 'express-async-errors';
 import { json } from 'body-parser';
 
 import cookieSession from 'cookie-session';
-import { NotFoundError, errorHandler } from '@tagerorg/common';
+import { NotFoundError, currentUser, errorHandler } from '@tagerorg/common';
 
+import createAncientRouter from './routes/new'
 
 const app = express();
 app.set('trust proxy', true)
@@ -14,7 +15,8 @@ app.use(cookieSession({
     secure: process.env.NODE_ENV !== 'test',
 }))
 
-// routers
+app.use(createAncientRouter);
+
 
 app.get('*', async () => {
     throw new NotFoundError();
