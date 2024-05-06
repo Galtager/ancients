@@ -10,7 +10,7 @@ const validators = [
     body('price').isFloat({ gt: 0 }).withMessage('Price must be greater than 0')
 ]
 
-router.post("/api/ancients", validators, validateRequest, requireAuth, async (req: Request, res: Response) => {
+router.post("/api/ancients", requireAuth, validators, validateRequest, async (req: Request, res: Response) => {
     const { title, price } = req.body;
 
     const ancient = await Ancient.create({

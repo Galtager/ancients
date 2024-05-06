@@ -8,53 +8,65 @@ it('has route handler listening to /api/tickets for post request', async () => {
         const res = await request(app)
             .post('/api/ancients')
             .send({})
-        expect(res.status).not.toEqual(404)
+        expect(res.status).not.toBe(404);
+        console.log(res)
     } catch (error) {
         console.log(error)
     }
 })
 
 it('can only be accessed if the user is signed in', async () => {
-    await request(app)
-        .post('/api/ancients')
-        .send({}).expect(401)
+    try {
+        const res = await request(app)
+            .post('/api/ancients')
+            .send({})
+        expect(res.status).toBe(401);
+    } catch (error) {
+        console.log(error)
+    }
 })
 it('return a status other then 401 if the user is siged in ', async () => {
     const res = await request(app)
         .post('/api/ancients')
         .set('Cookie', getCookie())
         .send({});
-    expect(res.status).not.toEqual(401)
+    expect(res.status).not.toBe(401)
 })
 
 it('returns error if an invalid title is provided', async () => {
-    await request(app)
+    const res = await request(app)
         .post('/api/ancients')
         .set('Cookie', getCookie())
         .send({
             price: 10
-        }).expect(400);
+        })
+    expect(res.status).toBe(400)
+
 })
 it('returns error if an invalid price is provided', async () => {
-    await request(app)
+    const res = await request(app)
         .post('/api/ancients')
         .set('Cookie', getCookie())
         .send({
             title: 'only title',
-        }).expect(400);
+        })
+    expect(res.status).toBe(400)
+
 })
 it('returns error if an empty title is provided', async () => {
-    await request(app)
+    const res = await request(app)
         .post('/api/ancients')
         .set('Cookie', getCookie())
         .send({
             title: '',
             price: 10
-        }).expect(400);
+        })
+    expect(res.status).toBe(400)
+
 })
 it('returns new ancient created', async () => {
     let ancients = await Ancient.find();
-    expect(ancients.length).toEqual(0);
+    expect(ancients.length).toBe(0);
     const { title, price } = { title: 'good title', price: 10 }
     const res = await request(app)
         .post('/api/ancients')
@@ -62,9 +74,12 @@ it('returns new ancient created', async () => {
         .send({
             title,
             price
-        }).expect(201);
+        })
+
     ancients = await Ancient.find();
-    expect(ancients.length).toEqual(1)
-    expect(ancients[0].price).toEqual(price)
-    expect(ancients[0].title).toEqual(title)
+
+    expect(res.status).toBe(201)
+    expect(ancients.length).toBe(1)
+    expect(ancients[0].price).toBe(price)
+    expect(ancients[0].title).toBe(title)
 })

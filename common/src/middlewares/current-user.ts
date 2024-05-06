@@ -16,11 +16,11 @@ declare global {
 
 export const currentUser = (req: Request, res: Response, next: NextFunction) => {
     try {
-        const noJwt = !req.session?.jwt || Object.keys({}).length === 0;
-        if (noJwt) {
+        if (!req.session?.jwt) {
             return next();
         }
-        const payload = jwt.verify(req.session!.jwt, process.env.JWT_KEY!) as UserPayload
+        const payload = jwt.verify(req.session.jwt, process.env.JWT_KEY!) as UserPayload;
+
         req.currentUser = payload
     } catch (error) {
     } finally {
