@@ -23,6 +23,8 @@ export const currentUser = (req: Request, res: Response, next: NextFunction) => 
 
         req.currentUser = payload
     } catch (error) {
+        console.log(error)
+        next();
     } finally {
         next();
     }
