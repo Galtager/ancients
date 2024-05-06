@@ -1,6 +1,7 @@
 import express from 'express';
 import 'express-async-errors';
 import { json } from 'body-parser';
+const router = express.Router()
 
 import cookieSession from 'cookie-session';
 import { NotFoundError, currentUser, errorHandler } from '@tagerorg/common';
@@ -14,14 +15,15 @@ app.use(cookieSession({
     signed: false,
     secure: process.env.NODE_ENV !== 'test',
 }))
+app.use(currentUser)
 
 app.use(createAncientRouter);
 
+app.use(errorHandler);
 
-app.get('*', async () => {
+app.all('*', async () => {
     throw new NotFoundError();
 })
 
-app.use(errorHandler);
 
 export default app;

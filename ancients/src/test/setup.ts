@@ -13,9 +13,8 @@ beforeAll(async () => {
 beforeEach(async () => {
     const collections = await mongoose.connection.db.collections();
     for (let collection of collections) {
-        await collection.deleteMany()
+        await collection.deleteMany();
     }
-
 })
 
 afterAll(async () => {
@@ -31,11 +30,11 @@ const getCookie = () => {
         id: 'lad123dasd',
         email: 'test@test.com'
     }
-    console.log(process.env.JWT_KEY)
-    const jwt = JWT.sign(payload, process.env.JWT_KEY!)
-    const sessionJSON = JSON.stringify({ jwt });
+    const token = JWT.sign(payload, process.env.JWT_KEY!)
+    const sess = { jwt: token }
+    const sessionJSON = JSON.stringify(sess);
     const base64 = Buffer.from(sessionJSON).toString('base64')
 
-    return [`express:sess=${base64}`]
+    return [`session=${base64}`];
 }
 export { getCookie }
