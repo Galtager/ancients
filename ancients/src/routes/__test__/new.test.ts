@@ -3,27 +3,17 @@ import app from "../../app";
 import { getCookie } from "../../test/setup";
 import { Ancient } from "../../models/ancient";
 
-it('has route handler listening to /api/tickets for post request', async () => {
-    try {
-        const res = await request(app)
-            .post('/api/ancients')
-            .send({})
-        expect(res.status).not.toBe(404);
-        console.log(res)
-    } catch (error) {
-        console.log(error)
-    }
+it('has route handler listening to /api/ancients for post request', async () => {
+    const res = await request(app)
+        .post('/api/ancients')
+        .send({})
+    expect(res.status).not.toBe(404);
 })
-
 it('can only be accessed if the user is signed in', async () => {
-    try {
-        const res = await request(app)
-            .post('/api/ancients')
-            .send({})
-        expect(res.status).toBe(401);
-    } catch (error) {
-        console.log(error)
-    }
+    const res = await request(app)
+        .post('/api/ancients')
+        .send({})
+    expect(res.status).toBe(401);
 })
 it('return a status other then 401 if the user is siged in ', async () => {
     const res = await request(app)
@@ -32,7 +22,6 @@ it('return a status other then 401 if the user is siged in ', async () => {
         .send({});
     expect(res.status).not.toBe(401)
 })
-
 it('returns error if an invalid title is provided', async () => {
     const res = await request(app)
         .post('/api/ancients')
@@ -41,7 +30,6 @@ it('returns error if an invalid title is provided', async () => {
             price: 10
         })
     expect(res.status).toBe(400)
-
 })
 it('returns error if an invalid price is provided', async () => {
     const res = await request(app)
@@ -51,7 +39,6 @@ it('returns error if an invalid price is provided', async () => {
             title: 'only title',
         })
     expect(res.status).toBe(400)
-
 })
 it('returns error if an empty title is provided', async () => {
     const res = await request(app)
@@ -82,4 +69,4 @@ it('returns new ancient created', async () => {
     expect(ancients.length).toBe(1)
     expect(ancients[0].price).toBe(price)
     expect(ancients[0].title).toBe(title)
-})
+});

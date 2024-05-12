@@ -1,4 +1,4 @@
-import { currentUser, requireAuth, validateRequest } from "@tagerorg/common";
+import { requireAuth, validateRequest } from "@tagerorg/common";
 import express, { Response, Request } from "express";
 import { body } from "express-validator";
 import { Ancient } from "../models/ancient";

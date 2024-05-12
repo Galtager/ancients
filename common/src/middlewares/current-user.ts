@@ -20,12 +20,10 @@ export const currentUser = (req: Request, res: Response, next: NextFunction) => 
             return next();
         }
         const payload = jwt.verify(req.session.jwt, process.env.JWT_KEY!) as UserPayload;
-
         req.currentUser = payload
+        next();
     } catch (error) {
         console.log(error)
-        next();
-    } finally {
         next();
     }
 };

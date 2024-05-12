@@ -1,12 +1,12 @@
 import express from 'express';
 import 'express-async-errors';
 import { json } from 'body-parser';
-const router = express.Router()
 
 import cookieSession from 'cookie-session';
 import { NotFoundError, currentUser, errorHandler } from '@tagerorg/common';
 
 import createAncientRouter from './routes/new'
+import getAncientRouter from './routes/get'
 
 const app = express();
 app.set('trust proxy', true)
@@ -18,6 +18,7 @@ app.use(cookieSession({
 app.use(currentUser)
 
 app.use(createAncientRouter);
+app.use(getAncientRouter);
 
 app.use(errorHandler);
 
