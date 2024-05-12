@@ -7,6 +7,8 @@ import { NotFoundError, currentUser, errorHandler } from '@tagerorg/common';
 
 import createAncientRouter from './routes/new'
 import getAncientRouter from './routes/get'
+import findAncientRouter from './routes/find'
+import updateAncientRouter from './routes/update'
 
 const app = express();
 app.set('trust proxy', true)
@@ -19,6 +21,8 @@ app.use(currentUser)
 
 app.use(createAncientRouter);
 app.use(getAncientRouter);
+app.use(findAncientRouter);
+app.use(updateAncientRouter);
 
 app.use(errorHandler);
 

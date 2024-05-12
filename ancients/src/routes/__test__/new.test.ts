@@ -1,6 +1,6 @@
 import request from "supertest";
 import app from "../../app";
-import { getCookie } from "../../test/setup";
+import { getCookie } from "../../test/helper";
 import { Ancient } from "../../models/ancient";
 
 it('has route handler listening to /api/ancients for post request', async () => {
