@@ -1,10 +1,12 @@
 import request from "supertest";
 import app from "../../app";
 import { getCookie } from "../../test/setup";
+import mongoose from "mongoose";
 
 it('returns a 404 if ancient is not found', async () => {
+    const guid = new mongoose.Types.ObjectId().toHexString()
     const res = await request(app)
-        .get('/api/ancients/testId')
+        .get(`/api/ancients/${guid}`)
         .set('Cookie', getCookie())
         .send()
     expect(res.status).toBe(404);
