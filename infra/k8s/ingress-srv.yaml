@@ -17,6 +17,14 @@ spec:
                 name: auth-srv
                 port:
                   number: 3000
+          - path: /api/ancients/?(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: ancients-srv
+                port:
+                  number: 3000
+
           - path: /?(.*)
             pathType: ImplementationSpecific
             backend:
