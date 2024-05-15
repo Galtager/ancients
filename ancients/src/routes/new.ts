@@ -2,6 +2,8 @@ import { requireAuth, validateRequest } from "@tagerorg/common";
 import express, { Response, Request } from "express";
 import { body } from "express-validator";
 import { Ancient } from "../models/ancient";
+import { AncientCreatePublisher } from "../events/publishers/ancients-created-publisher";
+import { natsWrapper } from "../nats";
 
 const router = express.Router();
 
@@ -19,6 +21,13 @@ router.post("/api/ancients", requireAuth, validators, validateRequest, async (re
         userId: req.currentUser?.id
     });
     await ancient.save();
+
+    new AncientCreatePublisher(natsWrapper.client).publish({
+        id: ancient.id,
+        title: ancient.title!,
+        price: ancient.price!,
+        userId: ancient.userId!
+    })
     res.status(201).send(ancient);
 })
 

@@ -3,7 +3,7 @@ import { Subjects } from "./subjects";
 
 
 export interface AncientCreatedEvent {
-    subject: Subjects.AncientUpdated;
+    subject: Subjects.AncientCreated;
     data: {
         id: string;
         title: string;

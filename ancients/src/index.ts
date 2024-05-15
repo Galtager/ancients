@@ -1,5 +1,6 @@
 import app from './app';
 import mongoose from 'mongoose';
+import { natsWrapper } from './nats';
 
 const start = async () => {
     if (!process.env.JWT_KEY) {
@@ -9,6 +10,7 @@ const start = async () => {
         throw new Error("DB_URI must be defined")
     }
     try {
+        await natsWrapper.connect("ancients", "asdas", "http://nats-srv:4222")
         await mongoose.connect(process.env.DB_URI!)
         console.log("Connected to Mongodb")
 
