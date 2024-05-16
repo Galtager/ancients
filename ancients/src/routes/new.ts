@@ -3,7 +3,7 @@ import express, { Response, Request } from "express";
 import { body } from "express-validator";
 import { Ancient } from "../models/ancient";
 import { AncientCreatePublisher } from "../events/publishers/ancients-created-publisher";
-import { natsWrapper } from "../nats";
+import { natsWrapper } from "../nats-wrapper";
 
 const router = express.Router();
 
@@ -22,12 +22,13 @@ router.post("/api/ancients", requireAuth, validators, validateRequest, async (re
     });
     await ancient.save();
 
-    new AncientCreatePublisher(natsWrapper.client).publish({
+    await new AncientCreatePublisher(natsWrapper.client).publish({
         id: ancient.id,
         title: ancient.title!,
         price: ancient.price!,
         userId: ancient.userId!
     })
+
     res.status(201).send(ancient);
 })
 

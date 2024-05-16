@@ -2,6 +2,7 @@ import request from "supertest";
 import app from "../../app";
 import { createAncient, getCookie, getMongoGuid } from "../../test/helper";
 import { Ancient } from "../../models/ancient";
+import { natsWrapper } from "../../nats-wrapper";
 
 it('returns a 404 if ancient is not exist', async () => {
     const guid = getMongoGuid()
@@ -67,3 +68,20 @@ it('updates the ancients provided a valid inputs', async () => {
     expect(ancientRes.body.title).toBe('new title')
     expect(ancientRes.body.price).toBe(10)
 });
+
+it('publishes an event', async () => {
+    const cookie = getCookie()
+    const res = await request(app)
+        .post('/api/ancients')
+        .set('Cookie', cookie)
+        .send({
+            title: "232",
+            price: 20
+        })
+    await request(app)
+        .put(`/api/ancients/${res.body.id}`)
+        .set('Cookie', cookie)
+        .send({ title: "new title", price: 10 }).expect(200);
+
+    expect(natsWrapper.client.publish).toHaveBeenCalled()
+})

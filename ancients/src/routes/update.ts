@@ -3,6 +3,8 @@ import express, { Response, Request } from "express";
 import { Ancient } from "../models/ancient";
 import mongoose from "mongoose";
 import { body } from "express-validator";
+import { AncientUpdatePublisher } from "../events/publishers/ancients-updated-publisher";
+import { natsWrapper } from "../nats-wrapper";
 
 const router = express.Router();
 
@@ -29,6 +31,13 @@ router.put("/api/ancients/:id", requireAuth, validators, validateRequest, async 
 
     })
     await ancient.save();
+
+    await new AncientUpdatePublisher(natsWrapper.client).publish({
+        id: ancient.id,
+        title: ancient.title!,
+        price: ancient.price!,
+        userId: ancient.userId!
+    })
 
     res.send(ancient);
 

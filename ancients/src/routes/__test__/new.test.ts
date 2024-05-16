@@ -2,6 +2,7 @@ import request from "supertest";
 import app from "../../app";
 import { getCookie } from "../../test/helper";
 import { Ancient } from "../../models/ancient";
+import { natsWrapper } from "../../nats-wrapper";
 
 it('has route handler listening to /api/ancients for post request', async () => {
     const res = await request(app)
@@ -70,3 +71,14 @@ it('returns new ancient created', async () => {
     expect(ancients[0].price).toBe(price)
     expect(ancients[0].title).toBe(title)
 });
+
+it('publishes an event', async () => {
+    await request(app)
+        .post('/api/ancients')
+        .set('Cookie', getCookie())
+        .send({
+            title: 'sdsd',
+            price: 20
+        }).expect(201)
+    expect(natsWrapper.client.publish).toHaveBeenCalled()
+})
