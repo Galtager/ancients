@@ -1,17 +1,18 @@
 import mongoose from "mongoose";
 import { OrderStatus } from '@tagerorg/common'
+import { AncientDoc } from "./ancient";
 interface OrderAttrs {
     status: OrderStatus;
     userId: string;
     expiresAt: Date;
-    ticket: TicketDoc
+    ancient: AncientDoc
 }
 
 interface OrderDoc extends mongoose.Document {
     status: OrderStatus;
     userId: string;
     expiresAt: Date;
-    ticket: TicketDoc
+    ancient: AncientDoc
 }
 
 interface OrderModel extends mongoose.Model<OrderDoc> {
@@ -24,15 +25,17 @@ const orderSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        require: true
+        require: true,
+        enum: Object.values(OrderStatus),
+        default: OrderStatus.Created
     },
     expiresAt: {
         type: mongoose.Schema.Types.Date,
         require: true
     },
-    ticket: {
+    ancient: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Ticket'
+        ref: 'Ancient'
     }
 }, {
     toJSON: {
