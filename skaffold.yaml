@@ -1,11 +1,10 @@
+# skaffold connected to sap-btp kyma
 apiVersion: skaffold/v4beta3
 kind: Config
 manifests:
   rawYaml:
     - ./infra/k8s/*
 build:
-  local:
-    push: false
   artifacts:
     - image: galtager1/auth
       context: auth
@@ -14,7 +13,7 @@ build:
       sync:
         manual:
           - dest: .
-            src: 'src/**/*.ts'
+            src: "src/**/*.ts"
     - image: galtager1/client
       context: client
       docker:
@@ -22,7 +21,7 @@ build:
       sync:
         manual:
           - dest: .
-            src: '**/*.js'
+            src: "**/*.js"
     - image: galtager1/ancients
       context: ancients
       docker:
@@ -30,7 +29,7 @@ build:
       sync:
         manual:
           - dest: .
-            src: 'src/**/*.ts'
+            src: "src/**/*.ts"
     - image: galtager1/orders
       context: orders
       docker:
@@ -38,4 +37,16 @@ build:
       sync:
         manual:
           - dest: .
-            src: 'src/**/*.ts'
+            src: "src/**/*.ts"
+deploy:
+  kubectl:
+    flags:
+      apply:
+        - --namespace=ancients-dev
+profiles:
+  - name: kyma
+    deploy:
+      kubectl:
+        flags:
+          apply:
+            - --namespace=ancients-dev
