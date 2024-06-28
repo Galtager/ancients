@@ -1,4 +1,7 @@
 export enum Subjects {
-    AncientCreated = 'item-created',
-    AncientUpdated = 'item-updated',
+    AncientCreated = 'ancient:created',
+    AncientUpdated = 'ancient:updated',
+
+    OrderCreated = 'order:created',
+    OrderCancelled = 'order:cancelled',
 }

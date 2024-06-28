@@ -4,7 +4,7 @@ import { Order } from "./order";
 interface AncientAttrs {
     title: string;
     price: number;
-    version: string
+    version?: string
 }
 
 export interface AncientDoc extends mongoose.Document {
@@ -28,6 +28,7 @@ const ancientSchema = new mongoose.Schema({
     },
     version: {
         type: String,
+        default: "0",
         require: true
     }
 }, {
@@ -53,7 +54,8 @@ ancientSchema.methods.isReserved = async function (attrs: AncientAttrs) {
             ]
         }
     })
-    return !!existingOrder
+
+    return existingOrder.length > 0
 };
 
 const Ancient = mongoose.model<AncientDoc, AncientModel>('Ancient', ancientSchema);

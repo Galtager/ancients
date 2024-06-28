@@ -1,84 +1,18 @@
-import request from "supertest";
-import app from "../../app";
-import { getCookie } from "../../test/helper";
-import { Ancient } from "../../models/order";
-import { natsWrapper } from "../../nats-wrapper";
+import { createAncient, createOrder, getMongoGuid } from "../../test/helper";
 
-it('has route handler listening to /api/ancients for post request', async () => {
-    const res = await request(app)
-        .post('/api/ancients')
-        .send({})
-    expect(res.status).not.toBe(404);
-})
-it('can only be accessed if the user is signed in', async () => {
-    const res = await request(app)
-        .post('/api/ancients')
-        .send({})
-    expect(res.status).toBe(401);
-})
-it('return a status other then 401 if the user is siged in ', async () => {
-    const res = await request(app)
-        .post('/api/ancients')
-        .set('Cookie', getCookie())
-        .send({});
-    expect(res.status).not.toBe(401)
-})
-it('returns error if an invalid title is provided', async () => {
-    const res = await request(app)
-        .post('/api/ancients')
-        .set('Cookie', getCookie())
-        .send({
-            price: 10
-        })
-    expect(res.status).toBe(400)
-})
-it('returns error if an invalid price is provided', async () => {
-    const res = await request(app)
-        .post('/api/ancients')
-        .set('Cookie', getCookie())
-        .send({
-            title: 'only title',
-        })
-    expect(res.status).toBe(400)
-})
-it('returns error if an empty title is provided', async () => {
-    const res = await request(app)
-        .post('/api/ancients')
-        .set('Cookie', getCookie())
-        .send({
-            title: '',
-            price: 10
-        })
-    expect(res.status).toBe(400)
 
+it('returns error if the ancient doesnot exist', async () => {
+    const ancientId = getMongoGuid();
+    await createOrder(ancientId).expect(404)
 })
-it('returns new ancient created', async () => {
-    let ancients = await Ancient.find();
-    expect(ancients.length).toBe(0);
-    const { title, price } = { title: 'good title', price: 10 }
-    const res = await request(app)
-        .post('/api/ancients')
-        .set('Cookie', getCookie())
-        .send({
-            title,
-            price
-        })
-
-    ancients = await Ancient.find();
-
-    expect(res.status).toBe(201)
-    expect(ancients.length).toBe(1)
-    expect(ancients[0].price).toBe(price)
-    expect(ancients[0].title).toBe(title)
-});
-
-it('publishes an event', async () => {
-    await request(app)
-        .post('/api/ancients')
-        .set('Cookie', getCookie())
-        .send({
-            title: 'sdsd',
-            price: 20
-        }).expect(201)
-    expect(natsWrapper.client.publish).toHaveBeenCalled()
+it('reserved a ancient', async () => {
+    const ancient = await createAncient({ price: 12, title: "test" });
+    await createOrder(ancient.id).expect(201)
 })
+it('returns error if the ancient is already reserved', async () => {
+    const ancient = await createAncient({ price: 12, title: "test" });
+    await createOrder(ancient.id).expect(201)
+    await createOrder(ancient._id).expect(400)
+})
+
+it.todo("emits an order created event")

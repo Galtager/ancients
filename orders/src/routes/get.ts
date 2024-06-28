@@ -1,4 +1,4 @@
-import { NotFoundError, requireAuth } from "@tagerorg/common";
+import { NotAuthorizedError, NotFoundError, currentUser, requireAuth } from "@tagerorg/common";
 import express, { Response, Request } from "express";
 import { Order } from "../models/order";
 import mongoose from "mongoose";
@@ -11,12 +11,14 @@ router.get("/api/orders/:id", requireAuth, async (req: Request, res: Response) =
     if (!isValidId) {
         throw new NotFoundError()
     }
-    const order = await Order.findById(req.params.id);
+    const order = await Order.findById(req.params.id).populate("ancient");
     if (!order) {
         throw new NotFoundError()
     }
+    if (order.userId !== req.currentUser!.id) {
+        throw new NotAuthorizedError()
+    }
     res.send(order);
-
 })
 
 export default router;

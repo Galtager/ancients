@@ -1,14 +1,12 @@
-import { NotAuthorizedError, NotFoundError, requireAuth, validateRequest } from "@tagerorg/common";
+import { NotAuthorizedError, NotFoundError, OrderStatus, currentUser, requireAuth, validateRequest } from "@tagerorg/common";
 import express, { Response, Request } from "express";
 import { Order } from "../models/order";
 import mongoose from "mongoose";
-import { AncientUpdatePublisher } from "../events/publishers/ancients-updated-publisher";
-import { natsWrapper } from "../nats-wrapper";
 
 const router = express.Router();
 
 
-router.put("/api/orders/:orderId", requireAuth, async (req: Request, res: Response) => {
+router.delete("/api/orders/:orderId", currentUser, requireAuth, async (req: Request, res: Response) => {
     const isValidId = mongoose.Types.ObjectId.isValid(req.params.orderId);
     if (!isValidId) {
         throw new NotFoundError()
@@ -20,7 +18,7 @@ router.put("/api/orders/:orderId", requireAuth, async (req: Request, res: Respon
     if (order.userId !== req.currentUser?.id) {
         throw new NotAuthorizedError()
     }
-    order.deleteOne()
+    order.status = OrderStatus.Cacncelled
     await order.save();
 
     // await new AncientUpdatePublisher(natsWrapper.client).publish({
@@ -29,10 +27,7 @@ router.put("/api/orders/:orderId", requireAuth, async (req: Request, res: Respon
     //     price: ancient.price!,
     //     userId: ancient.userId!
     // })
-
-    res.send();
-
-
+    res.status(204).send(order);
 })
 
 export default router;

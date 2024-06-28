@@ -4,6 +4,7 @@ import JWT from "jsonwebtoken";
 import mongoose from 'mongoose';
 import app from "../app";
 import { OrderDto } from "../../interfaces/order.interface";
+import { Ancient } from "../models/ancient";
 
 const getCookie = () => {
     const payload = {
@@ -21,10 +22,16 @@ const getCookie = () => {
 const getMongoGuid = () => {
     return new mongoose.Types.ObjectId().toHexString()
 }
-const createAncient = ({ title, price }: OrderDto) => {
-    return request(app)
-        .post('/api/ancients')
-        .set('Cookie', getCookie())
-        .send({ title, price });
+const createAncient = async ({ title, price }: OrderDto) => {
+    const ancient = Ancient.build({ title, price })
+    await ancient.save();
+    return ancient;
 }
-export { getCookie, getMongoGuid, createAncient }
+const createOrder = (ancientId: string, coockie?: string[]) => {
+    return request(app)
+        .post('/api/orders')
+        .set('Cookie', coockie ?? getCookie())
+        .send({ ancientId });
+}
+
+export { getCookie, getMongoGuid, createAncient, createOrder }

@@ -1,15 +1,32 @@
-import request from "supertest";
 import app from "../../app";
-import { getCookie, createAncient } from "../../test/helper";
+import { createAncient, createOrder, getCookie } from "../../test/helper";
+import request from 'supertest'
 
-it('can fetch a list of ancients', async () => {
-    // CREATE ANCIENT
-    await createAncient({ title: "title", price: 10 })
-    await createAncient({ title: "title2", price: 20 })
-    const ancients = await request(app)
-        .get('/api/ancients')
-        .set('Cookie', getCookie())
-        .send().expect(200);
-    expect(ancients.body.length).toBe(2)
+it('fetches orders for an particular user', async () => {
+    // Create 3 tickets
+    const ancientOne = await createAncient({ price: 13, title: "test" });
+    const ancientTwo = await createAncient({ price: 14, title: "test2" });
+    const ancientThree = await createAncient({ price: 15, title: "test3" });
 
-});
+    const newUserCoockie = getCookie()
+    await createOrder(ancientOne.id).expect(201);
+    await createOrder(ancientTwo.id, newUserCoockie).expect(201);
+    await createOrder(ancientThree.id, newUserCoockie).expect(201);
+
+    const res = await request(app)
+        .get(`/api/orders`)
+        .set('Cookie', newUserCoockie)
+        .send()
+    expect(res.body.length).toBe(2);
+})
+it('populate the ticket for the order', async () => {
+    const ancient = await createAncient({ price: 13, title: "test" });
+    const newUserCoockie = getCookie()
+    await createOrder(ancient.id, newUserCoockie).expect(201);
+    const res = await request(app)
+        .get(`/api/orders`)
+        .set('Cookie', newUserCoockie)
+        .send()
+    expect(res.body[0].ancient.id).toEqual(ancient.id);
+
+})

@@ -1,31 +1,25 @@
-import request from "supertest";
 import app from "../../app";
-import { createAncient, getCookie, getMongoGuid } from "../../test/helper";
+import { createAncient, createOrder, getCookie } from "../../test/helper";
+import request from 'supertest'
 
-it('returns a 404 if ancient is not found', async () => {
-    const guid = getMongoGuid()
+it('fetches the order', async () => {
+    const ancientOne = await createAncient({ price: 13, title: "test" });
+
+    const newUserCoockie = getCookie()
+    const order = await createOrder(ancientOne.id, newUserCoockie).expect(201);
     const res = await request(app)
-        .get(`/api/ancients/${guid}`)
-        .set('Cookie', getCookie())
-        .send()
-    expect(res.status).toBe(404);
-});
-it('return the ancient if found', async () => {
-    const { title, price } = { title: 'good title', price: 10 }
-    // CREATE ANCIENT
-    const response = await createAncient({ title, price })
+        .get(`/api/orders/${order.body.id}`)
+        .set('Cookie', newUserCoockie)
+        .send();
+    expect(res.body.id).toBe(order.body.id);
+})
+it('returns error if one user trie to fetch another users order', async () => {
+    const ancientOne = await createAncient({ price: 13, title: "test" });
 
-    expect(response.status).toBe(201);
-    // GET ANCIENT
-    const ancientResponse = await request(app)
-        .get(`/api/ancients/${response.body.id}`)
-        .set('Cookie', getCookie())
-        .send()
-
-    expect(ancientResponse.status).toBe(200);
-    expect(ancientResponse.body.title).toBe(title)
-    expect(ancientResponse.body.price).toBe(price)
-    expect(ancientResponse.body.id).toBe(response.body.id)
-
-});
-
+    const newUserCoockie = getCookie()
+    const order = await createOrder(ancientOne.id).expect(201);
+    await request(app)
+        .get(`/api/orders/${order.body.id}`)
+        .set('Cookie', newUserCoockie)
+        .send().expect(401);
+})
