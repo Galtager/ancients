@@ -43,10 +43,10 @@ router.post("/api/orders", requireAuth, validators, validateRequest, async (req:
     await order.save();
 
     // publish an event 
-    await new OrderCreatePublisher(natsWrapper.client).publish({
+    new OrderCreatePublisher(natsWrapper.client).publish({
         id: order.id,
         status: order.status,
-        expiresAt: order.expiresAt.toString(),
+        expiresAt: order.expiresAt.toISOString(),
         userId: order.userId,
         ancient: {
             id: order.ancient.id,

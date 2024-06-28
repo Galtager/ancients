@@ -2,6 +2,8 @@ import { NotAuthorizedError, NotFoundError, OrderStatus, currentUser, requireAut
 import express, { Response, Request } from "express";
 import { Order } from "../models/order";
 import mongoose from "mongoose";
+import { OrderCancelledPublisher } from "../events/publishers/ancients-cancelled-publisher";
+import { natsWrapper } from "../nats-wrapper";
 
 const router = express.Router();
 
@@ -21,12 +23,13 @@ router.delete("/api/orders/:orderId", currentUser, requireAuth, async (req: Requ
     order.status = OrderStatus.Cacncelled
     await order.save();
 
-    // await new AncientUpdatePublisher(natsWrapper.client).publish({
-    //     id: ancient.id,
-    //     title: ancient.title!,
-    //     price: ancient.price!,
-    //     userId: ancient.userId!
-    // })
+    new OrderCancelledPublisher(natsWrapper.client).publish({
+        id: order.id,
+        ancient: {
+            id: order.ancient.id,
+            price: order.ancient.price
+        }
+    })
     res.status(204).send(order);
 })
 

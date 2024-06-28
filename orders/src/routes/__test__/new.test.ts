@@ -1,3 +1,4 @@
+import { natsWrapper } from "../../nats-wrapper";
 import { createAncient, createOrder, getMongoGuid } from "../../test/helper";
 
 
@@ -15,4 +16,9 @@ it('returns error if the ancient is already reserved', async () => {
     await createOrder(ancient._id).expect(400)
 })
 
-it.todo("emits an order created event")
+it("emits an order created event", async () => {
+    const ancient = await createAncient({ price: 12, title: "test" });
+    await createOrder(ancient.id).expect(201)
+
+    expect(natsWrapper.client.publish).toHaveBeenCalled()
+})

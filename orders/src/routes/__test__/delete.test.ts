@@ -2,6 +2,7 @@ import { OrderStatus } from "@tagerorg/common";
 import app from "../../app";
 import { createAncient, createOrder, getCookie, getMongoGuid } from "../../test/helper";
 import request from 'supertest'
+import { natsWrapper } from "../../nats-wrapper";
 
 it('check for not valid id', async () => {
     await request(app)
@@ -38,4 +39,18 @@ it('delete an order', async () => {
         .set('Cookie', newUserCoockie)
         .send();
     expect(res.body.status).toBe(OrderStatus.Cacncelled);
+})
+it("emits an order created event", async () => {
+    const ancientOne = await createAncient({ price: 13, title: "test" });
+    const newUserCoockie = getCookie()
+
+    const order = await createOrder(ancientOne.id, newUserCoockie).expect(201);
+
+    await request(app)
+        .delete(`/api/orders/${order.body.id}`)
+        .set('Cookie', newUserCoockie)
+        .send().expect(204)
+
+
+    expect(natsWrapper.client.publish).toHaveBeenCalled()
 })
