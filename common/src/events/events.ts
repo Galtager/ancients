@@ -29,7 +29,7 @@ export interface OrderCreatedEvent {
         status: OrderStatus;
         userId: string;
         expiresAt: string
-        ticket: {
+        ancient: {
             id: string;
             price: number;
         }
@@ -40,7 +40,7 @@ export interface OrderCancelledEvent {
     subject: Subjects.OrderCancelled;
     data: {
         id: string;
-        ticket: {
+        ancient: {
             id: string;
             price: number;
         }

@@ -4,6 +4,8 @@ import { body } from "express-validator";
 import { Order } from "../models/order";
 import mongoose from "mongoose";
 import { Ancient } from "../models/ancient";
+import { natsWrapper } from "../nats-wrapper";
+import { OrderCreatePublisher } from "../events/publishers/ancients-created-publisher";
 
 const router = express.Router();
 
@@ -41,12 +43,16 @@ router.post("/api/orders", requireAuth, validators, validateRequest, async (req:
     await order.save();
 
     // publish an event 
-    // await new OrderCreatePublisher(natsWrapper.client).publish({
-    //     id: ancient.id,
-    //     title: ancient.title!,
-    //     price: ancient.price!,
-    //     userId: ancient.userId!
-    // })
+    await new OrderCreatePublisher(natsWrapper.client).publish({
+        id: order.id,
+        status: order.status,
+        expiresAt: order.expiresAt.toString(),
+        userId: order.userId,
+        ancient: {
+            id: order.ancient.id,
+            price: order.ancient.price
+        }
+    })
 
     res.status(201).send(order);
 })

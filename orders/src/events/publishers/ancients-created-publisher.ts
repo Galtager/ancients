@@ -1,5 +1,5 @@
-import { AncientCreatedEvent, CustomPublisher, Subjects } from "@tagerorg/common";
+import { CustomPublisher, OrderCreatedEvent, Subjects } from "@tagerorg/common";
 
-export class AncientCreatePublisher extends CustomPublisher<AncientCreatedEvent> {
-    readonly subject = Subjects.AncientCreated
+export class OrderCreatePublisher extends CustomPublisher<OrderCreatedEvent> {
+    readonly subject = Subjects.OrderCreated
 }
