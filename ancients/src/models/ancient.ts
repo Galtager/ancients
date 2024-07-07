@@ -11,7 +11,7 @@ export interface AncientDoc extends mongoose.Document {
     title: string;
     price: number;
     userId: string;
-    version: string;
+    version: number;
 }
 
 interface AncientModel extends mongoose.Model<AncientDoc> {

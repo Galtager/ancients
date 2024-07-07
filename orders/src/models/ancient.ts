@@ -1,22 +1,24 @@
 import mongoose from "mongoose";
 import { OrderStatus } from '@tagerorg/common'
 import { Order } from "./order";
+import { updateIfCurrentPlugin } from "mongoose-update-if-current";
 interface AncientAttrs {
     id?: string;
     title: string;
     price: number;
-    version?: string
 }
 
 export interface AncientDoc extends mongoose.Document {
     title: string;
     price: number;
-    version: string;
+    version: number;
     isReserved(): Promise<boolean>
 }
 
 interface AncientModel extends mongoose.Model<AncientDoc> {
-    build(attrs: AncientAttrs): AncientDoc
+    build(attrs: AncientAttrs): AncientDoc;
+    findByEvent(event: { id: string, version: number }): Promise<AncientDoc | null>;
+
 }
 const ancientSchema = new mongoose.Schema({
     title: {
@@ -24,12 +26,7 @@ const ancientSchema = new mongoose.Schema({
         require: true
     },
     price: {
-        type: String,
-        require: true
-    },
-    version: {
-        type: String,
-        default: "0",
+        type: Number,
         require: true
     }
 }, {
@@ -40,6 +37,12 @@ const ancientSchema = new mongoose.Schema({
         }
     }
 });
+ancientSchema.set("versionKey", "version");
+ancientSchema.plugin(updateIfCurrentPlugin);
+
+ancientSchema.statics.findByEvent = (event: { id: string, version: number }) => {
+    return Ancient.findOne({ _id: event.id, version: event.version - 1 });
+};
 
 ancientSchema.statics.build = (attrs: AncientAttrs) => {
     return new Ancient({
@@ -48,6 +51,7 @@ ancientSchema.statics.build = (attrs: AncientAttrs) => {
         price: attrs.price,
     })
 };
+
 ancientSchema.methods.isReserved = async function (attrs: AncientAttrs) {
     const existingOrder = await Order.find({
         ancient: this,

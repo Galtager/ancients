@@ -9,9 +9,7 @@ export class AncientCreatedListener extends CustomListener<AncientCreatedEvent> 
 
     async onMessage(data: AncientCreatedEvent['data'], msg: Message) {
         const { title, price, id } = data;
-        const ancient = Ancient.build({
-            title, price, id
-        })
+        const ancient = Ancient.build({ title, price, id })
         await ancient.save();
         msg.ack()
     }

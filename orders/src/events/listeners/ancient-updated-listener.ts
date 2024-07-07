@@ -8,11 +8,12 @@ export class AncientUpdatedListener extends CustomListener<AncientUpdatedEvent> 
     queueGroupName = queueGroupName;
 
     async onMessage(data: AncientUpdatedEvent['data'], msg: Message) {
-        const { title, price, id } = data;
-        const ancient = await Ancient.findById(id);
+        const ancient = await Ancient.findByEvent(data);
+
         if (!ancient) {
             throw new Error('Ancient nor found')
         }
+        const { title, price } = data;
         ancient.set({ title, price })
         await ancient.save();
         msg.ack()

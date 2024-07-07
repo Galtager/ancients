@@ -25,7 +25,8 @@ router.post("/api/ancients", requireAuth, validators, validateRequest, async (re
         id: ancient.id,
         title: ancient.title!,
         price: ancient.price!,
-        userId: ancient.userId!
+        userId: ancient.userId!,
+        version: ancient.version
     })
     res.status(201).send(ancient);
 })
