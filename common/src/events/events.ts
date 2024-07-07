@@ -8,6 +8,7 @@ export interface AncientCreatedEvent {
     data: {
         id: string;
         title: string;
+        version: number;
         price: number;
         userId: string
     }
@@ -16,9 +17,10 @@ export interface AncientUpdatedEvent {
     subject: Subjects.AncientUpdated;
     data: {
         id: string;
+        version: number;
         title: string;
         price: number;
-        userId: string
+        userId: string;
     }
 }
 
@@ -26,6 +28,7 @@ export interface OrderCreatedEvent {
     subject: Subjects.OrderCreated;
     data: {
         id: string;
+        version: number;
         status: OrderStatus;
         userId: string;
         expiresAt: string
@@ -40,6 +43,7 @@ export interface OrderCancelledEvent {
     subject: Subjects.OrderCancelled;
     data: {
         id: string;
+        version: number;
         ancient: {
             id: string;
             price: number;

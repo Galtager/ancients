@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import { OrderStatus } from '@tagerorg/common'
 import { Order } from "./order";
 interface AncientAttrs {
+    id?: string;
     title: string;
     price: number;
     version?: string
@@ -41,7 +42,11 @@ const ancientSchema = new mongoose.Schema({
 });
 
 ancientSchema.statics.build = (attrs: AncientAttrs) => {
-    return new Ancient(attrs)
+    return new Ancient({
+        _id: attrs.id,
+        title: attrs.title,
+        price: attrs.price,
+    })
 };
 ancientSchema.methods.isReserved = async function (attrs: AncientAttrs) {
     const existingOrder = await Order.find({

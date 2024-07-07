@@ -14,11 +14,10 @@ const validators = [
 
 router.post("/api/ancients", requireAuth, validators, validateRequest, async (req: Request, res: Response) => {
     const { title, price } = req.body;
-
-    const ancient = await Ancient.create({
+    const ancient = Ancient.build({
         title,
         price,
-        userId: req.currentUser?.id
+        userId: req.currentUser!.id
     });
     await ancient.save();
 
@@ -28,7 +27,6 @@ router.post("/api/ancients", requireAuth, validators, validateRequest, async (re
         price: ancient.price!,
         userId: ancient.userId!
     })
-
     res.status(201).send(ancient);
 })
 
