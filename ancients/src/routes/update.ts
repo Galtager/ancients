@@ -37,7 +37,8 @@ router.put("/api/ancients/:id", requireAuth, validators, validateRequest, async 
         title: ancient.title!,
         price: ancient.price!,
         userId: ancient.userId!,
-        version: ancient.version
+        version: ancient.version,
+        orderId: ancient.orderId
     })
 
     res.send(ancient);
