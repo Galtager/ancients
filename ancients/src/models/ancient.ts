@@ -34,7 +34,6 @@ const ancientSchema = new mongoose.Schema({
     },
     orderId: {
         type: String,
-        default: null
     }
 }, {
     toJSON: {
