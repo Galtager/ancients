@@ -21,6 +21,7 @@ export interface AncientUpdatedEvent {
         title: string;
         price: number;
         userId: string;
+        orderId?: string;
     }
 }
 
