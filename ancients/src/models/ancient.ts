@@ -12,6 +12,7 @@ export interface AncientDoc extends mongoose.Document {
     price: number;
     userId: string;
     version: number;
+    orderId?: string;
 }
 
 interface AncientModel extends mongoose.Model<AncientDoc> {
@@ -30,6 +31,10 @@ const ancientSchema = new mongoose.Schema({
     userId: {
         type: String,
         require: true
+    },
+    orderId: {
+        type: String,
+        default: null
     }
 }, {
     toJSON: {
