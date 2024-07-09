@@ -3,7 +3,7 @@ import { createAncient, createOrder, getCookie } from "../../test/helper";
 import request from 'supertest'
 
 it('fetches orders for an particular user', async () => {
-    // Create 3 tickets
+    // Create 3 ancients
     const ancientOne = await createAncient({ price: 13, title: "test" });
     const ancientTwo = await createAncient({ price: 14, title: "test2" });
     const ancientThree = await createAncient({ price: 15, title: "test3" });
@@ -19,7 +19,7 @@ it('fetches orders for an particular user', async () => {
         .send()
     expect(res.body.length).toBe(2);
 })
-it('populate the ticket for the order', async () => {
+it('populate the ancient for the order', async () => {
     const ancient = await createAncient({ price: 13, title: "test" });
     const newUserCoockie = getCookie()
     await createOrder(ancient.id, newUserCoockie).expect(201);

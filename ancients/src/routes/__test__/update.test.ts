@@ -19,7 +19,7 @@ it('returns a 401 if a user is not authenticated', async () => {
         .send()
     expect(res.status).toBe(401);
 });
-it('returns a 401 if a user does not own the ticket', async () => {
+it('returns a 401 if a user does not own the ancient', async () => {
     const ancient = await createAncient({ title: 'ssda', price: 10 })
     const res = await request(app)
         .put(`/api/ancients/${ancient.body.id}`)
