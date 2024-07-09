@@ -85,3 +85,22 @@ it('publishes an event', async () => {
 
     expect(natsWrapper.client.publish).toHaveBeenCalled()
 })
+it('rejects updates if ancient is reserved', async () => {
+    const cookie = getCookie()
+    const res = await request(app)
+        .post('/api/ancients')
+        .set('Cookie', cookie)
+        .send({
+            title: "232",
+            price: 20
+        })
+
+    const ancient = await Ancient.findById(res.body.id);
+    ancient!.set({ orderId: getMongoGuid() })
+    await ancient!.save();
+
+    await request(app)
+        .put(`/api/ancients/${res.body.id}`)
+        .set('Cookie', cookie)
+        .send({ title: "new title", price: 10 }).expect(400);
+})

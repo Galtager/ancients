@@ -1,4 +1,4 @@
-import { NotAuthorizedError, NotFoundError, requireAuth, validateRequest } from "@tagerorg/common";
+import { BadRequestError, NotAuthorizedError, NotFoundError, requireAuth, validateRequest } from "@tagerorg/common";
 import express, { Response, Request } from "express";
 import { Ancient } from "../models/ancient";
 import mongoose from "mongoose";
@@ -24,6 +24,9 @@ router.put("/api/ancients/:id", requireAuth, validators, validateRequest, async 
     }
     if (ancient.userId !== req.currentUser?.id) {
         throw new NotAuthorizedError()
+    }
+    if (ancient.orderId) {
+        throw new BadRequestError("Cannot edit a reserved ancient")
     }
     ancient.set({
         title: req.body.title,
