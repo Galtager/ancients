@@ -38,6 +38,14 @@ build:
         manual:
           - dest: .
             src: "src/**/*.ts"
+    - image: galtager1/expiration
+      context: expiration
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - dest: .
+            src: "src/**/*.ts"
 deploy:
   kubectl:
     flags:
