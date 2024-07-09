@@ -23,7 +23,7 @@ const getMongoGuid = () => {
     return new mongoose.Types.ObjectId().toHexString()
 }
 const createAncient = async ({ title, price }: OrderDto) => {
-    const ancient = Ancient.build({ title, price })
+    const ancient = Ancient.build({ title, price, id: getMongoGuid() })
     await ancient.save();
     return ancient;
 }

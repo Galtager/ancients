@@ -3,7 +3,7 @@ import { OrderStatus } from '@tagerorg/common'
 import { Order } from "./order";
 import { updateIfCurrentPlugin } from "mongoose-update-if-current";
 interface AncientAttrs {
-    id?: string;
+    id: string;
     title: string;
     price: number;
 }
