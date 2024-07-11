@@ -5,6 +5,8 @@ import { Order } from "../models/order";
 import mongoose from "mongoose";
 import { stripe } from "../stripe";
 import { Payment } from "../models/payment";
+import { PaymentCreatedPublisher } from "../events/publishers/payment-created-publisher";
+import { natsWrapper } from "../nats-wrapper";
 
 const router = express.Router();
 
@@ -41,7 +43,11 @@ router.post("/api/payments", requireAuth, validators, validateRequest, async (re
     const payment = Payment.build({ orderId: order.id, stripeId: charge.id })
     await payment.save();
 
-    res.status(201).send(order);
+    new PaymentCreatedPublisher(natsWrapper.client).publish({
+        id: payment.id,
+        orderId: payment.orderId
+    })
+    res.status(201).send({ id: payment.id });
 })
 
 export default router;
