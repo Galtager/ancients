@@ -2,19 +2,12 @@ import { OrderCreatedEvent, OrderStatus } from "@tagerorg/common"
 import { natsWrapper } from "../../nats-wrapper"
 import { OrderCreatedListener } from "../listeners/order-created-listener"
 import { getMongoGuid } from "../../test/helper"
-import { Ancient } from "../../models/ancient"
 import { Message } from "node-nats-streaming"
+import { Order } from "../../models/order"
 
 const setup = async () => {
     // create an instance of the listener
     const listener = new OrderCreatedListener(natsWrapper.client);
-    // create and save ancient
-    const ancient = Ancient.build({
-        price: 12,
-        title: "test",
-        userId: "123dasda"
-    })
-    await ancient.save();
     // create fake data
     const data: OrderCreatedEvent['data'] = {
         id: getMongoGuid(),
@@ -23,8 +16,8 @@ const setup = async () => {
         userId: 'test',
         expiresAt: 'test',
         ancient: {
-            id: ancient.id,
-            price: ancient.price
+            id: getMongoGuid(),
+            price: 20
         }
     }
     // create a fake message
@@ -35,11 +28,12 @@ const setup = async () => {
     return { listener, data, msg }
 
 }
-it("sets the orderId in the ancient object", async () => {
+it("replicates the order info", async () => {
     const { listener, data, msg } = await setup();
     await listener.onMessage(data, msg);
-    const ancient = await Ancient.findById(data.ancient.id);
-    expect(ancient?.orderId).toEqual(data.id);
+    const order = await Order.findById(data.id);
+    expect(order!.id).toEqual(data.id);
+    expect(order!.price).toEqual(data.ancient.price);
 
 })
 it("acks the msg", async () => {
@@ -48,12 +42,3 @@ it("acks the msg", async () => {
     expect(msg.ack).toHaveBeenCalled();
 
 });
-it("publishes a ticket updated event", async () => {
-    const { listener, data, msg } = await setup();
-    await listener.onMessage(data, msg);
-    expect(natsWrapper.client.publish).toHaveBeenCalled();
-
-    const ancientUpdatedData = JSON.parse((natsWrapper.client.publish as jest.Mock).mock.calls[0][1])
-    expect(data.id).toEqual(ancientUpdatedData.orderId);
-
-})
