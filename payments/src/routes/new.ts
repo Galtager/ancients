@@ -3,8 +3,8 @@ import express, { Response, Request } from "express";
 import { body } from "express-validator";
 import { Order } from "../models/order";
 import mongoose from "mongoose";
-import { natsWrapper } from "../nats-wrapper";
-import { ChargeCreatedPublisher } from "../events/publishers/charge-created-publisher";
+import { stripe } from "../stripe";
+import { Payment } from "../models/payment";
 
 const router = express.Router();
 
@@ -33,7 +33,13 @@ router.post("/api/payments", requireAuth, validators, validateRequest, async (re
         throw new BadRequestError("Cannot pay for cancelled order")
     }
 
-    // publish an event 
+    const charge = await stripe.charges.create({
+        currency: 'usd',
+        amount: order.price * 100,
+        source: 'tok_visa' // replace with real token for charge
+    })
+    const payment = Payment.build({ orderId: order.id, stripeId: charge.id })
+    await payment.save();
 
     res.status(201).send(order);
 })
