@@ -1,7 +1,10 @@
 # This is a basic workflow to help you get started with Actions
 name: tests
 # Controls when the workflow will run
-on: pull_request
+on:
+  pull_request:
+    paths:
+      - "ancients/**"
 jobs:
   build:
     runs-on: ubuntu-latest
