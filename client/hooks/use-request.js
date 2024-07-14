@@ -7,13 +7,15 @@ export default ({ url, method, body }) => {
     const [data, setData] = useState(null)
     const [loading, setLoading] = useState(false)
 
-    const doRequest = async () => {
+    const doRequest = async (props = {}) => {
         try {
             setErrors(null);
             setLoading(true);
             setData(null)
 
-            const response = await axios[method](url, body);
+            const response = await axios[method](url,
+                { ...body, ...props }
+            );
             setData(response.data);
             return response.data;
         } catch (err) {

@@ -7,7 +7,9 @@ const router = express.Router();
 
 router.get("/api/ancients", requireAuth, async (req: Request, res: Response) => {
 
-    const ancients = await Ancient.find({});
+    const ancients = await Ancient.find({
+        orderId: undefined
+    });
     res.send(ancients);
 
 })

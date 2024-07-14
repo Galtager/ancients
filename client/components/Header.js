@@ -5,6 +5,8 @@ const Header = ({ currentUser }) => {
     const links = [
         { label: 'Sign Up', href: '/auth/signup', visible: !currentUser },
         { label: 'Sign In', href: '/auth/signin', visible: !currentUser },
+        { label: 'Sell Ancients', href: '/ancients/new', visible: !!currentUser },
+        { label: 'My Orders', href: '/orders', visible: !!currentUser },
         { label: 'Sign Out', href: '/auth/signout', visible: !!currentUser }
     ].filter(link => link.visible).map(link =>
         <li key={link.href} className='px-3'>
